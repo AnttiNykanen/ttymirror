@@ -5,6 +5,7 @@
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 #include "serial.h"
 
 #define BUFFER_SIZE 4096
@@ -73,7 +74,7 @@ int serial_set_options(serial_port_t *port)
 	port->cur_termios.c_cflag |= (CLOCAL | CREAD);
 
 	port->cur_termios.c_lflag |= ~(ICANON | ECHO);
-	port->cur_termios.c_cc[VMIN] = (cc_t)1;
+	port->cur_termios.c_cc[VMIN] = (cc_t)0;
 	port->cur_termios.c_cc[VTIME] = (cc_t)0;
 
 	(void)tcsetattr(port->fd, TCSANOW, &port->cur_termios);
@@ -198,11 +199,21 @@ void serial_mirror_data(serial_port_t *src, serial_port_t *dst)
 	}
 }
 
-#if 0
-void serial_mirror_status(serial_port_t *src, serial_port_t *dst)
+void serial_mirror_control(serial_port_t *src, serial_port_t *dst)
 {
 	ioctl(src->fd, TIOCMGET, &src->status);
 
+	if (src->status & TIOCM_CTS) {
+		dst->status |= TIOCM_RTS;
+	} else {
+		dst->status &= ~TIOCM_RTS;
+	}
+
+	if (src->status & (TIOCM_DSR | TIOCM_CAR)) {
+		dst->status |= TIOCM_DTR;
+	} else {
+		dst->status &= ~TIOCM_DTR;
+	}
+
 	ioctl(dst->fd, TIOCMSET, &dst->status);
 }
-#endif

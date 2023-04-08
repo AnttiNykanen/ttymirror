@@ -25,6 +25,6 @@ int serial_open(char *);
 int serial_set_options(serial_port_t *);
 speed_t serial_validate_baudrate(int);
 void serial_mirror_data(serial_port_t *, serial_port_t *);
-//void serial_mirror_status(serial_port_t *, serial_port_t *);
+void serial_mirror_control(serial_port_t *, serial_port_t *);
 
 #endif /* _TTYMIRROR_SERIAL_H */

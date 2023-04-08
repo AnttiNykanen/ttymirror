@@ -179,6 +179,10 @@ int main(int argc, char **argv) {
 		if (poll_fds[1].revents & POLLIN) {
 			serial_mirror_data(&mirror, &source);
 		}
+
+		/* Timeout - check and mirror pin state */
+		serial_mirror_control(&source, &mirror);
+		serial_mirror_control(&mirror, &source);
 	}
 
 	cleanup(0);
