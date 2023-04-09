@@ -157,8 +157,15 @@ int main(int argc, char **argv) {
 	(void)signal(SIGINT, cleanup);
 	(void)signal(SIGTERM, cleanup);
 
-	serial_set_options(&source);
-	serial_set_options(&mirror);
+	if (serial_set_options(&source) == -1) {
+		fprintf(stderr, "Error setting source port options.\n");
+		cleanup(0);
+	}
+
+	if (serial_set_options(&mirror) == -1) {
+		fprintf(stderr, "Error setting mirror port options.\n");
+		cleanup(0);
+	}
 
 	poll_fds[0].fd = source.fd;
 	poll_fds[0].events = POLLIN;
