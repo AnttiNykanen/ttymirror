@@ -183,12 +183,12 @@ speed_t serial_validate_baudrate(int baudrate)
 
 void serial_mirror_data(serial_port_t *src, serial_port_t *dst)
 {
-	size_t count;
+	ssize_t count;
 
 	count = read(src->fd, buffer, BUFFER_SIZE);
 
 	if (count > 0) {
-		(void)write(dst->fd, buffer, count);
+		(void)write(dst->fd, buffer, (size_t)count);
 		(void)tcdrain(dst->fd);
 	} else if (count == -1) {
 		if (errno != EAGAIN && errno != EWOULDBLOCK) {
