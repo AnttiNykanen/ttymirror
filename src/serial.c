@@ -204,8 +204,15 @@ void serial_mirror_data(serial_port_t *src, serial_port_t *dst)
 	count = read(src->fd, buffer, BUFFER_SIZE);
 
 	if (count > 0) {
-		(void)write(dst->fd, buffer, (size_t)count);
-		(void)tcdrain(dst->fd);
+		if (write(dst->fd, buffer, (size_t)count) == -1) {
+			fprintf(stderr, "Error writing to %s: %s\n",
+				dst->port_name, strerror(errno));
+		}
+
+		if (tcdrain(dst->fd) == -1) {
+			fprintf(stderr, "Error draining %s: %s\n",
+				dst->port_name, strerror(errno));
+		}
 	} else if (count == -1) {
 		if (errno != EAGAIN && errno != EWOULDBLOCK) {
 			fprintf(stderr, "Error reading from %s: %s\n",
