@@ -89,7 +89,7 @@ int serial_set_options(serial_port_t *port)
 	/* Always set CLOCAL ("local line") and CREAD ("enable receiver") */
 	port->cur_termios.c_cflag |= (CLOCAL | CREAD);
 
-	port->cur_termios.c_lflag |= ~(ICANON | ECHO);
+	port->cur_termios.c_lflag &= ~(ICANON | ECHO);
 	port->cur_termios.c_cc[VMIN] = (cc_t)0;
 	port->cur_termios.c_cc[VTIME] = (cc_t)0;
 
